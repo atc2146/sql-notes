@@ -314,26 +314,29 @@ GROUP BY titles.pub_id
 HAVING AVG(price) > 10  
 ```
 
-
 ## Case Statements
 The CASE statement goes through conditions and returns a value when the first condition is met (like an IF-THEN-ELSE statement).
 So, once a condition is true, it will stop reading and return the result. If no conditions are true, it returns the value in the ELSE clause.
 If there is no `ELSE` part and no conditions are true, it returns `NULL`.
 ```sql
-
 CASE
     WHEN condition1 THEN result1
     WHEN condition2 THEN result2
     WHEN conditionN THEN resultN
     ELSE result
 END;
-
-CASE WHEN THEN ELSE END
-CAN ALSO
-SUM(CASE WHEN condition THEN 1 ELSE 0 END)
 ```
 
+```sql
+CASE 
+  WHEN val THEN return_val ELSE some_other_val
+END
+```
 
+or sum the values
+```sql
+SUM(CASE WHEN condition THEN 1 ELSE 0 END)
+```
 
 ## Common Table Expresions (CTEs) / WITH Clauses
 * Why? an alternative to creating a view.
@@ -349,26 +352,31 @@ SQL_statement using above CTE;
 
 You can write multiple CTEs in one query
 ```sql
-WITH   PersonCTE (BusinessEntityID, FirstName, LastName)
-AS     (SELECT Person.BusinessEntityID,
-               FirstName,
-               LastName
-        FROM   Person.Person
-        WHERE  LastName LIKE 'C%'),
-PhoneCTE (BusinessEntityID, PhoneNumber)
-AS     (SELECT BusinessEntityID,
-               PhoneNumber
-        FROM   Person.PersonPhone)
-SELECT FirstName,
-       LastName,
-       PhoneNumber
-FROM   PersonCTE
-INNER JOIN
-PhoneCTE
-ON PersonCTE.BusinessEntityID = PhoneCTE.BusinessEntityID;
+WITH send_timespent AS (
+    SELECT age_breakdown.age_bucket, SUM(activities.time_spent) AS send_timespent 
+    FROM age_breakdown
+  LEFT JOIN activities on age_breakdown.user_id = activities.user_id
+    WHERE activities.type = 'send'
+    GROUP BY 1
+),
+open_timespent AS (
+    SELECT age_breakdown.age_bucket, SUM(activities.time_spent) AS open_timespent 
+    FROM age_breakdown
+  LEFT JOIN activities on age_breakdown.user_id = activities.user_id
+    WHERE activities.type = 'open'
+    GROUP BY 1
+),
+SELECT a.age_bucket, 
+    s.send_timespent / (s.send_timespent + o.open_timespent) AS pct_send,
+    o.open_timespent / (s.send_timespent + o.open_timespent) AS pct_open,
+FROM age_breakdown a 
+LEFT JOIN send_timespent s ON a.age_bucket = s.age_bucket
+LEFT JOIN open_timespent o ON a.age_bucket = o.age_bucket
+GROUP BY 1;
 ```
 
-- Can be used for recursive statements
+Can be used for recursive statements
+```sql
 WITH RECURSIVE factorial(n, fact) AS ( 
           SELECT 0, 1 
           UNION ALL  
@@ -376,6 +384,8 @@ WITH RECURSIVE factorial(n, fact) AS (
           FROM factorial 
           WHERE n < 20 ) 
 SELECT * from factorial;
+
+--Output
 +------+---------------------+
 | n    | fact                |
 +------+---------------------+
@@ -401,77 +411,86 @@ SELECT * from factorial;
 |   19 |  121645100408832000 |
 |   20 | 2432902008176640000 |
 +------+---------------------+
+```
 
-WITH send_timespent AS (
-    SELECT age_breakdown.age_bucket, SUM(activities.time_spent) AS send_timespent 
-    FROM age_breakdown
-  LEFT JOIN activities on age_breakdown.user_id = activities.user_id
-    WHERE activities.type = 'send'
-    GROUP BY 1
-),
-open_timespent AS (
-    SELECT age_breakdown.age_bucket, SUM(activities.time_spent) AS open_timespent 
-    FROM age_breakdown
-  LEFT JOIN activities on age_breakdown.user_id = activities.user_id
-    WHERE activities.type = 'open'
-    GROUP BY 1
-),
-SELECT a.age_bucket, 
-    s.send_timespent / (s.send_timespent + o.open_timespent) AS pct_send,
-    o.open_timespent / (s.send_timespent + o.open_timespent) AS pct_open,
-FROM age_breakdown a 
-LEFT JOIN send_timespent s ON a.age_bucket = s.age_bucket
-LEFT JOIN open_timespent o ON a.age_bucket = o.age_bucket
-GROUP BY 1
 
-** DERIVED TABLES
-- A subquery nested within a FROM clause, this result must be named
-SELECT col1, col2
-FROM (
-	SELECT col, col2
+## Derived Tables
+* A subquery nested within a FROM clause, this result **must** be named.
+
+```sql
+SELECT 
+  named_table.col1
+  ,named_table.col2
+FROM 
+  (
+	SELECT col1, col2
 	FROM table1
 	) named_tabled
 WHERE named_tabled.col1 > 0;
+```
 
-- JOINS with derived tables
+`JOINS` with derived tables
+
+```sql
 SELECT * FROM
 (SELECT * from table1) t1 INNER JOIN
 (SELECT * from table2) t2 ON
 t1.id = t2.id
+```
 
+## Window Functions
+* Act **after** the result of the query.
+* Window functions operate on a set of rows and return a single value for *each* row from the underlying query.
+* `PARTITION BY` col, and `ORDER BY` col are optional; i.e if no partiton, taken over whole table
+* The `ORDER BY` clause defines the logical order of the rows within each partition of the result set.
+* Function can be `AVG()`, `SUM()`, `ROW_NUMBER()`, etc.
+* For ranking functions, make sure to get the correct ordering.
+* Note: The `ROW_NUMBER()` function does not reset if it sees a different partition value that switches back (i.e XXYX)
 
-** WINDOW FUNCTIONS
-- Act after the result of the query
-- Window functions operate on a set of rows and return a single value for each row from the underlying query.
-- PARTITION BY col, and ORDER BY col are optional; i.e if no partiton, taken over whole table
-- The ORDER BY clause defines the logical order of the rows within each partition of the result set.
-- Function can be AVG(), SUM(), ROW_NUMBER(), etc.
-- For ranking functions, make sure to get the correct ordering.
-- Note: The ROW_NUMBER() function does not reset if it sees a different partition value that switches back (i.e XXYX)
-
+```sql
 FUNCTION() OVER([PARTITION BY col1,...] [ORDER BY col1, ...[NULLS{FIRST|LAST}]][FRAME CLAUSE]) AS calc_col
 
-- The FRAME CLAUSE is by default [ROWS|RANGE] BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-- RANGE will include those rows in the window frame which have the same ORDER BY values as the current row.
-- The FRAME CLAUSE can be either {RANGE|ROWS} frame_start or {RANGE|ROWS} BETWEEN frame_start and frame_end
+--- 3 Day Moving Average
+select
+  *
+  ,AVG(Price) OVER(ORDER BY Date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_average
+from stock_prices;
+```
+
+The FRAME CLAUSE is by default:
+```sql
+[ROWS|RANGE] BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+```
+`RANGE` will include those rows in the window frame which have the same `ORDER BY` values as the current row.
+
+The FRAME CLAUSE can be either {RANGE|ROWS} frame_start or {RANGE|ROWS} BETWEEN frame_start and frame_end
 where frame_start is UNBOUNDED PRECEDING or CURRENT ROW and frame_end is CURRENT ROW or UNBOUNDED FOLLOWING
-- Example: AVERAGE(price) OVER(ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as avg_3D_price
 
+Example
+```sql
+SELECT
+AVERAGE(price) OVER(ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as avg_3D_price
+...
+```
 
-- LAG and LEAD gets the previous or following value of a particular column.
-- The syntax is LAG(col, offset, [default_if_no_value]) OVER()
-- DENSE_RANK()  does not skip any ranks if there is a tie between the ranks of the preceding records.
-- RANK() may skip ranks.
+* `LAG` and `LEAD` gets the previous or following value of a particular column.  
 
+The syntax is;
+```sql
+SELECT
+LAG(col, offset, [default_if_no_value]) OVER()
+...
+```
 
+* `DENSE_RANK()` does not skip any ranks if there is a tie between the ranks of the preceding records.
+* `RANK()` may skip ranks.
 
-** OTHER
-concat is ||
-WHERE aggregates before HAVING
+## Operators
+* concat is `||`
 
 ## References
-[Microsoft: Use HAVING and WHERE Clauses in the Same Query (Visual Database Tools)](https://docs.microsoft.com/en-us/sql/ssms/visual-db-tools/use-having-and-where-clauses-in-the-same-query-visual-database-tools?view=sql-server-ver15)
-https://www.red-gate.com/simple-talk/sql/learn-sql-server/window-functions-in-sql-server-part-2-the-frame/#:~:text=RANGE%20versus%20ROW&text=The%20ROWS%20clause%20limits%20the,value%20in%20the%20current%20row.
-https://www.essentialsql.com/introduction-common-table-expressions-ctes/
-https://data36.com/sql-interview-questions-tech-screening-data-analysts/
-https://stevestedman.com/2013/04/rows-and-range-preceding-and-following/
+* [Microsoft: Use HAVING and WHERE Clauses in the Same Query (Visual Database Tools)](https://docs.microsoft.com/en-us/sql/ssms/visual-db-tools/use-having-and-where-clauses-in-the-same-query-visual-database-tools?view=sql-server-ver15)
+* https://www.red-gate.com/simple-talk/sql/learn-sql-server/window-functions-in-sql-server-part-2-the-frame/#:~:text=RANGE%20versus%20ROW&text=The%20ROWS%20clause%20limits%20the,value%20in%20the%20current%20row.
+* https://www.essentialsql.com/introduction-common-table-expressions-ctes/
+* https://data36.com/sql-interview-questions-tech-screening-data-analysts/
+* https://stevestedman.com/2013/04/rows-and-range-preceding-and-following/
