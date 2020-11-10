@@ -12,7 +12,8 @@
 
 ### Snowflake Schema
 * Normalized, no redundant information
-* A fact table contains business facts, and foreign keys which refer to candidate keys in the dimension tables.  Dimension tables contain descriptive fields that are typically textual fields.
+* **Fact tables** contains business facts, and have foreign keys which refer to candidate keys in the dimension tables.
+* **Dimension tables** contain descriptive fields that are typically textual fields.
 
 ## Terminology
 
@@ -42,12 +43,17 @@ SELECT col1, col2
 FROM table_name;
 ```
 
-The statement below will only return distinct values from the "col1".   columns.
+The statement below will only return distinct values from the "col1"   columns.
 ```sql
 SELECT DISTINCT col1 
 FROM table_name;
 ```
 If multiple columns are used, the query uses a combination of all values. `NULL` counts as one distinct value only.
+
+```sql
+SELECT DISTINCT col1, col2, col3
+FROM table_name;
+```
 
 You can also get a count of the distinct values:
 
@@ -75,9 +81,9 @@ LIMIT 3;
 ## Filtering Data
 
 The `WHERE` clause:
-* is used to filter records
-* operators that can be used in WHERE clause: `<>`, `BETWEEN`, `LIKE`
-* can also do `WHERE NOT` <condition>
+* Is used to filter records.
+* Operators that can be used in WHERE clause: `<>`, `BETWEEN`, `LIKE`.
+* Can also do `WHERE NOT` <condition>.
 
 ```sql
 SELECT col1
@@ -126,13 +132,13 @@ FROM table_name
 WHERE column_name IN (value1, value2, ...);
 ```
 
+### NULL values
 When checking for `NULL` values, you must use the `IS` keyword, not `=`.
 
-### NULL values
-* check using `IS NULL` or `IS NOT NULL`
-* `COALESCE()` takes the first non-null value
+* Check using `IS NULL` or `IS NOT NULL`.
+* `COALESCE()` takes the first non-null value.
 * ANSI_NULLS operate differently, it is three-valued logic
-* Generally, aggregate functions like `AVG()` dissmisses rows with `NULL` values
+* Generally, aggregate functions like `AVG()` dissmisses rows with `NULL` values.
 
 ```sql
 SELECT col1
@@ -191,8 +197,8 @@ WHERE condition;
 ## Aggregate Functions
 
 ### MIN() and MAX() functions
-* `MIN()` returns the lowest value of the selected column
-* Should use aliases
+* `MIN()` returns the lowest value of the selected column.
+* Should use aliases for clarity.
 
 ```sql
 SELECT MAX(Price) AS LargestPrice
@@ -211,23 +217,57 @@ WHERE condition;
 ## JOINS
 
 SQl joins include:
-* `INNER JOIN`:
-* `LEFT (OUTER) JOIN`:
+* `INNER JOIN`: selects records that have matching values in both tables.
+* `LEFT (OUTER) JOIN`: returns all records from the left table (table1), and the matched records from the right table (table2). The result is NULL from the right side, if there is no match.
+* `RIGHT (OUTER) JOIN`: same logic as `LEFT JOIN`.
+* `FULL (OUTER) JOIN`: returns all records when there is a match in left (table1) or right (table2) table records.
+* `CROSS JOIN`: Does a cartesian product. Rarely used.  The total number of rows will be (number of rows in table1)*(number of rows in table2).
 
+
+
+```sql
+SELECT DISTINCT c.name
+FROM customers c
+INNER JOIN orders o
+ON c.id = o.cust_id;
+
+SELECT 
+  c.name
+  ,o.order_id
+  ,o.order_date
+FROM customers c
+LEFT JOIN orders o
+ON c.id = o.cust_id;
+
+SELECT * 
+FROM table1 
+CROSS JOIN table2;
+```
+
+
+Left Exclusive Join: If you don’t want any of the right table’s values and you just want the left table’s values.
 
 ```sql
 SELECT column_name(s)
 FROM table1
-INNER JOIN table2
-ON table1.column_name = table2.column_name;
+LEFT JOIN table2
+ON table1.key = table2.key
+WHERE table2.key IS NULL;
 ```
 
-** UNION
+## Union
+
+* `UNION ALL` does not remove any rows.
+* `UNION` removes duplicates.
+* The number of columns from the queries must match.
+
+```sql
 SELECT column_name(s) FROM table1
 UNION
 SELECT column_name(s) FROM table2;
-- UNION ALL does not remove any rows
-- UNION removes duplicates
+```
+
+
 
 ** GROUP BY
 SELECT column_name(s)
