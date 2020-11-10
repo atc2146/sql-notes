@@ -216,7 +216,7 @@ WHERE condition;
 
 ## JOINS
 
-SQl joins include:
+SQL joins include:
 * `INNER JOIN`: selects records that have matching values in both tables.
 * `LEFT (OUTER) JOIN`: returns all records from the left table (table1), and the matched records from the right table (table2). The result is NULL from the right side, if there is no match.
 * `RIGHT (OUTER) JOIN`: same logic as `LEFT JOIN`.
@@ -226,11 +226,13 @@ SQl joins include:
 
 
 ```sql
+-- INNER JOIN
 SELECT DISTINCT c.name
 FROM customers c
 INNER JOIN orders o
 ON c.id = o.cust_id;
 
+-- LEFT JOIN
 SELECT 
   c.name
   ,o.order_id
@@ -239,6 +241,7 @@ FROM customers c
 LEFT JOIN orders o
 ON c.id = o.cust_id;
 
+-- CROSS JOIN
 SELECT * 
 FROM table1 
 CROSS JOIN table2;
@@ -248,6 +251,7 @@ CROSS JOIN table2;
 Left Exclusive Join: If you don’t want any of the right table’s values and you just want the left table’s values.
 
 ```sql
+-- LEFT EXCLUSIVE JOIN
 SELECT column_name(s)
 FROM table1
 LEFT JOIN table2
@@ -257,9 +261,9 @@ WHERE table2.key IS NULL;
 
 ## Union
 
-* `UNION ALL` does not remove any rows.
-* `UNION` removes duplicates.
-* The number of columns from the queries must match.
+* `UNION ALL`: does not remove any rows.
+* `UNION`: removes duplicates.
+* The number of columns from the queries must match.  The datatype of each column must also match.
 
 ```sql
 SELECT column_name(s) FROM table1
@@ -267,31 +271,55 @@ UNION
 SELECT column_name(s) FROM table2;
 ```
 
+### Intersect
+This is used to combine two `SELECT` statements, but returns rows only from the first `SELECT` statement that are identical to a row in the second `SELECT` statement.
 
+### Except
+This combines two `SELECT` statements and returns rows from the first `SELECT` statement that are not returned by the second `SELECT` statement.
 
-** GROUP BY
+## Grouping
+
+The `GROUP BY` keyword is used to group values in a column and is usually used with aggregate functions such as `SUM()`, `MAX()`, `COUNT()`.
+
+```sql
 SELECT column_name(s)
 FROM table_name
 WHERE condition
 GROUP BY column_name(s)
 ORDER BY column_name(s);
+```
 
-** HAVING
-- The HAVING clause was added to SQL because the WHERE keyword could not be used with aggregate functions.
-- When GROUP BY and WHERE is in the same query, WHERE clause is used to filter records from a result.  The filtering
-occurs before any groupings are made.  The HAVING clause is used to filter values from a group. 
+### Having
+* The `HAVING` clause was added to SQL because the `WHERE` keyword could not be used with aggregate functions.
+* When `GROUP BY` and `WHERE` is in the same query, `WHERE` clause is used to filter records from a result.  The filtering
+occurs **before** any groupings are made.  The `HAVING` clause is used to filter values from a group. 
 
+```sql
 SELECT column_name(s)
 FROM table_name
 WHERE condition
 GROUP BY column_name(s)
 HAVING aggregate_condition
 ORDER BY column_name(s);
+```
 
-** CASE
+Example:
+
+```sql
+SELECT titles.pub_id, AVG(titles.price)  
+FROM titles INNER JOIN publishers  
+   ON titles.pub_id = publishers.pub_id  
+WHERE publishers.state = 'CA'  
+GROUP BY titles.pub_id  
+HAVING AVG(price) > 10  
+```
+
+
+## Case Statements
 The CASE statement goes through conditions and returns a value when the first condition is met (like an IF-THEN-ELSE statement).
 So, once a condition is true, it will stop reading and return the result. If no conditions are true, it returns the value in the ELSE clause.
-If there is no ELSE part and no conditions are true, it returns NULL.
+If there is no `ELSE` part and no conditions are true, it returns `NULL`.
+```sql
 
 CASE
     WHEN condition1 THEN result1
@@ -303,23 +331,24 @@ END;
 CASE WHEN THEN ELSE END
 CAN ALSO
 SUM(CASE WHEN condition THEN 1 ELSE 0 END)
-
-** OTHER
-concat is ||
-WHERE aggregates before HAVING
+```
 
 
-** COMMON TABLE EXPRESSIONS (WITH CLAUSES)
-- Why? an alternative to creating a view
-- Increased readability and simplification
-- Named columns must match selected columns in CTE definition
 
+## Common Table Expresions (CTEs) / WITH Clauses
+* Why? an alternative to creating a view.
+* Increased readability and simplification.
+* Named columns must match selected columns in CTE definition.
+
+```sql
 WITH CTE_expression_name(named_col_1, ...)
 AS
     (CTE_definition)
 SQL_statement using above CTE;
+```
 
--can write multiple CTEs in one query
+You can write multiple CTEs in one query
+```sql
 WITH   PersonCTE (BusinessEntityID, FirstName, LastName)
 AS     (SELECT Person.BusinessEntityID,
                FirstName,
@@ -337,7 +366,7 @@ FROM   PersonCTE
 INNER JOIN
 PhoneCTE
 ON PersonCTE.BusinessEntityID = PhoneCTE.BusinessEntityID;
-
+```
 
 - Can be used for recursive statements
 WITH RECURSIVE factorial(n, fact) AS ( 
@@ -436,8 +465,12 @@ where frame_start is UNBOUNDED PRECEDING or CURRENT ROW and frame_end is CURRENT
 
 
 
-## References
+** OTHER
+concat is ||
+WHERE aggregates before HAVING
 
+## References
+[Microsoft: Use HAVING and WHERE Clauses in the Same Query (Visual Database Tools)](https://docs.microsoft.com/en-us/sql/ssms/visual-db-tools/use-having-and-where-clauses-in-the-same-query-visual-database-tools?view=sql-server-ver15)
 https://www.red-gate.com/simple-talk/sql/learn-sql-server/window-functions-in-sql-server-part-2-the-frame/#:~:text=RANGE%20versus%20ROW&text=The%20ROWS%20clause%20limits%20the,value%20in%20the%20current%20row.
 https://www.essentialsql.com/introduction-common-table-expressions-ctes/
 https://data36.com/sql-interview-questions-tech-screening-data-analysts/
