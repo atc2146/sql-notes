@@ -135,6 +135,9 @@ FROM table_name
 WHERE column_name IN (value1, value2, ...);
 ```
 
+## ANY and ALL
+
+
 ### NULL values
 When checking for `NULL` values, you must use the `IS` keyword, not `=`.
 
@@ -216,6 +219,7 @@ FROM table_name
 WHERE condition;
 ```
 
+A `COUNT(*)` will count all `NULL` and `NOT NULL` values.
 
 ## JOINS
 
@@ -262,6 +266,27 @@ ON table1.key = table2.key
 WHERE table2.key IS NULL;
 ```
 
+### ON WHERE vs ON AND in JOINS
+```SQL
+SELECT *
+FROM Orders
+LEFT JOIN OrderLines ON OrderLines.OrderID=Orders.ID
+WHERE Orders.ID = 12345
+
+
+SELECT *
+FROM Orders
+LEFT JOIN OrderLines ON OrderLines.OrderID=Orders.ID 
+    AND Orders.ID = 12345
+```
+The first will return an order and its lines, if any, for order number `12345`. The second will return all orders, but only order `12345` will have any lines associated with it.
+
+With an `INNER JOIN`, the clauses are effectively equivalent.
+
+Summary:
+* `WHERE`: filtered after joining
+* `AND` filtered before joining
+
 ## Union
 
 * `UNION ALL`: does not remove any rows.
@@ -275,10 +300,12 @@ SELECT column_name(s) FROM table2;
 ```
 
 ### Intersect
-This is used to combine two `SELECT` statements, but returns rows only from the first `SELECT` statement that are identical to a row in the second `SELECT` statement.
+`INTERSECT` is used to combine two `SELECT` statements, but returns rows only from the first `SELECT` statement that are identical to a row in the second `SELECT` statement.
 
 ### Except
-This combines two `SELECT` statements and returns rows from the first `SELECT` statement that are not returned by the second `SELECT` statement.
+`EXCEPT` combines two `SELECT` statements and returns rows from the first `SELECT` statement that are not returned by the second `SELECT` statement.
+
+In set theory, this is equivalent to A - B = A ∩ B<sup>c</sup>, Where A is the first table and B is the second table.
 
 ## Grouping
 
@@ -319,7 +346,7 @@ HAVING AVG(price) > 10
 
 ## Case Statements
 The CASE statement goes through conditions and returns a value when the first condition is met (like an IF-THEN-ELSE statement).
-So, once a condition is true, it will stop reading and return the result. If no conditions are true, it returns the value in the ELSE clause.
+So, once a condition is true, it will stop reading and return the result. If no conditions are true, it returns the value in the `ELSE` clause.
 If there is no `ELSE` part and no conditions are true, it returns `NULL`.
 ```sql
 CASE
@@ -426,9 +453,9 @@ SELECT
   ,named_table.col2
 FROM 
   (
-	SELECT col1, col2
-	FROM table1
-	) named_tabled
+  SELECT col1, col2
+  FROM table1
+  ) named_tabled
 WHERE named_tabled.col1 > 0;
 ```
 
@@ -445,6 +472,7 @@ t1.id = t2.id
 * Act **after** the result of the query.
 * Window functions operate on a set of rows and return a single value for *each* row from the underlying query.
 * `PARTITION BY` col, and `ORDER BY` col are optional; i.e if no partiton, taken over whole table
+  * `ORDER BY` is not optional for `ROW_NUMBER()`
 * The `ORDER BY` clause defines the logical order of the rows within each partition of the result set.
 * Function can be `AVG()`, `SUM()`, `ROW_NUMBER()`, etc.
 * For ranking functions, make sure to get the correct ordering.
@@ -514,3 +542,8 @@ SELECT DATEDIFF("2017-06-25", "2017-06-15");
 * [Toptal: Intro to Window Functions](https://www.toptal.com/sql/intro-to-sql-windows-functions)
 * [Gdcoder: Practice DS SQL Interview Questions](https://gdcoder.com/how-to-nail-a-data-scientist-sql-interview-includes-sql-code/)
 * [How MySQL Uses Indexes](https://dev.mysql.com/doc/refman/8.0/en/mysql-indexes.html)
+* [StackOverFlow: On vs Where in Joins](https://stackoverflow.com/questions/354070/sql-join-where-clause-vs-on-clause)
+* [Nick Singh: 30 SQL Interview Practice Questions](https://www.nicksingh.com/posts/30-sql-and-database-design-questions-from-real-data-science-interviews)
+* [Github rbhatia46 DS Interview Resources](https://github.com/rbhatia46/Data-Science-Interview-Resources)
+* [Medium: Churn rate with SQL](https://medium.com/@gozdeturan/churn-rate-with-sql-eef787ca4b2b)
+* [Medium: SQL Questions (the histogram) for the aspiring Data Scientist](https://medium.com/analytics-and-data/sql-interview-questions-for-aspiring-data-scientist-the-histogram-76a46de9b0a3)
