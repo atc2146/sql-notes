@@ -33,6 +33,9 @@ Includes statements like:
 SELECT, INSERT, UPDATE, DELETE, MERGE, CALL, EXPLAIN PLAN, LOCK TABLE
 ```
 
+## Indexes
+Indexes are used to find rows with specific column values quickly.  Without an index, MySQL must begin with the first row and then read through the entire table to find the relevant rows.  Usually implemented with [b-trees](https://en.wikipedia.org/wiki/B-tree).
+
 ## Selecting
 
 A select statement that selects the columns "col1" and "col2"
@@ -335,7 +338,7 @@ END
 
 or sum the values
 ```sql
-SUM(CASE WHEN condition THEN 1 ELSE 0 END)
+SUM(CASE WHEN condition THEN 1 ELSE 0 END) AS col_name
 ```
 
 ## Common Table Expresions (CTEs) / WITH Clauses
@@ -463,19 +466,25 @@ The FRAME CLAUSE is by default:
 ```
 `RANGE` will include those rows in the window frame which have the same `ORDER BY` values as the current row.
 
-The FRAME CLAUSE can be either {RANGE|ROWS} frame_start or {RANGE|ROWS} BETWEEN frame_start and frame_end
-where frame_start is UNBOUNDED PRECEDING or CURRENT ROW and frame_end is CURRENT ROW or UNBOUNDED FOLLOWING
+The FRAME CLAUSE can be either:
+* {RANGE|ROWS} *frame_start*
+* {RANGE|ROWS} BETWEEN *frame_start* and *frame_end*
+
+Where *frame_start* is:
+* `UNBOUNDED PRECEDING` or `CURRENT ROW`.  
+And *frame_end* is:  
+* `CURRENT ROW` or `UNBOUNDED FOLLOWING`
 
 Example
 ```sql
 SELECT
-AVERAGE(price) OVER(ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as avg_3D_price
+AVG(price) OVER(ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as avg_3D_price
 ...
 ```
 
 * `LAG` and `LEAD` gets the previous or following value of a particular column.  
 
-The syntax is;
+The syntax is:
 ```sql
 SELECT
 LAG(col, offset, [default_if_no_value]) OVER()
@@ -485,12 +494,23 @@ LAG(col, offset, [default_if_no_value]) OVER()
 * `DENSE_RANK()` does not skip any ranks if there is a tie between the ranks of the preceding records.
 * `RANK()` may skip ranks.
 
-## Operators
+## Built-In Functions
 * concat is `||`
+
+### Date Functions
+`DATEDIFF(date1, date2)` calculate the number of days between (date1 - date2)
+
+```sql
+SELECT DATEDIFF("2017-06-25", "2017-06-15");
+-- 10
+```
 
 ## References
 * [Microsoft: Use HAVING and WHERE Clauses in the Same Query (Visual Database Tools)](https://docs.microsoft.com/en-us/sql/ssms/visual-db-tools/use-having-and-where-clauses-in-the-same-query-visual-database-tools?view=sql-server-ver15)
-* https://www.red-gate.com/simple-talk/sql/learn-sql-server/window-functions-in-sql-server-part-2-the-frame/#:~:text=RANGE%20versus%20ROW&text=The%20ROWS%20clause%20limits%20the,value%20in%20the%20current%20row.
-* https://www.essentialsql.com/introduction-common-table-expressions-ctes/
-* https://data36.com/sql-interview-questions-tech-screening-data-analysts/
-* https://stevestedman.com/2013/04/rows-and-range-preceding-and-following/
+* [Red Gate Window Functions](https://www.red-gate.com/simple-talk/sql/learn-sql-server/window-functions-in-sql-server-part-2-the-frame/#:~:text=RANGE%20versus%20ROW&text=The%20ROWS%20clause%20limits%20the,value%20in%20the%20current%20row)
+* [EssentialSQL: CTEs](https://www.essentialsql.com/introduction-common-table-expressions-ctes/)
+* [Data36: Interview Questions](https://data36.com/sql-interview-questions-tech-screening-data-analysts/)
+* [Stevestedman: Rows and Range](https://stevestedman.com/2013/04/rows-and-range-preceding-and-following/)
+* [Toptal: Intro to Window Functions](https://www.toptal.com/sql/intro-to-sql-windows-functions)
+* [Gdcoder: Practice DS SQL Interview Questions](https://gdcoder.com/how-to-nail-a-data-scientist-sql-interview-includes-sql-code/)
+* [How MySQL Uses Indexes](https://dev.mysql.com/doc/refman/8.0/en/mysql-indexes.html)
