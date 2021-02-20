@@ -2,7 +2,7 @@
 
 * SQL syntax is different, but ANSI SQL is standard
 * Not case sensitive
-* Use a semi-colon at the end of each statement
+* Semi-optional: Use a semi-colon at the end of each statement
 
 ## Schemas
 
@@ -532,6 +532,10 @@ LAG(col, offset, [default_if_no_value]) OVER()
 SELECT DATEDIFF("2017-06-25", "2017-06-15");
 -- 10
 ```
+
+## Other
+* Be careful when doing division.  SQL automically does integer division if both the numerator and denominator are integers.  Explicit cast to floats is needed.
+
 
 ## References
 * [Microsoft: Use HAVING and WHERE Clauses in the Same Query (Visual Database Tools)](https://docs.microsoft.com/en-us/sql/ssms/visual-db-tools/use-having-and-where-clauses-in-the-same-query-visual-database-tools?view=sql-server-ver15)
