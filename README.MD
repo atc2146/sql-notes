@@ -295,7 +295,9 @@ Summary:
 * `WHERE`: Filtered **after** joining.
 * `AND` Filtered **before** joining.
 
-## Union
+## Other Functions
+
+### Union
 
 * `UNION ALL`: Does not remove any rows.
 * `UNION`: Removes duplicate rows.
@@ -306,6 +308,7 @@ SELECT column_name(s) FROM table1
 UNION
 SELECT column_name(s) FROM table2;
 ```
+
 
 ### Intersect
 `INTERSECT` is used to combine two `SELECT` statements, but returns rows only from the first `SELECT` statement that are identical to a row in the second `SELECT` statement.
@@ -344,22 +347,25 @@ ORDER BY column_name(s);
 Example:
 
 ```sql
-SELECT titles.pub_id, AVG(titles.price)  
-FROM titles INNER JOIN publishers  
-   ON titles.pub_id = publishers.pub_id  
+SELECT titles.pub_id, AVG(titles.price) AS avg_price
+FROM titles 
+INNER JOIN publishers  
+  ON titles.pub_id = publishers.pub_id  
 WHERE publishers.state = 'CA'  
 GROUP BY titles.pub_id  
-HAVING AVG(price) > 10  
+HAVING AVG(titles.price) > 10  
 ```
 
 ## Case Statements
 The CASE statement goes through conditions and returns a value when the first condition is met (like an IF-THEN-ELSE statement).
 So, once a condition is true, it will stop reading and return the result. If no conditions are true, it returns the value in the `ELSE` clause.
 If there is no `ELSE` part and no conditions are true, it returns `NULL`.
+
 ```sql
 CASE
     WHEN condition1 THEN result1
     WHEN condition2 THEN result2
+    ...
     WHEN conditionN THEN resultN
     ELSE result
 END;
@@ -367,7 +373,7 @@ END;
 
 ```sql
 CASE 
-  WHEN val THEN return_val ELSE some_other_val
+  WHEN condition THEN return_val ELSE some_other_val
 END
 ```
 
@@ -377,14 +383,14 @@ SUM(CASE WHEN condition THEN 1 ELSE 0 END) AS col_name
 ```
 
 ## Common Table Expresions (CTEs) / WITH Clauses
-* Why? an alternative to creating a view.
+* Why? An alternative to creating a view.
 * Increased readability and simplification.
 * Named columns must match selected columns in CTE definition.
 
 ```sql
-WITH CTE_expression_name(named_col_1, ...)
-AS
-    (CTE_definition)
+WITH CTE_expression_name([named_col_1, ...]) AS (
+  CTE_definition
+)
 SQL_statement using above CTE;
 ```
 
@@ -416,11 +422,12 @@ GROUP BY 1;
 Can be used for recursive statements
 ```sql
 WITH RECURSIVE factorial(n, fact) AS ( 
-          SELECT 0, 1 
-          UNION ALL  
-          SELECT n + 1, fact * (n+1)  
-          FROM factorial 
-          WHERE n < 20 ) 
+  SELECT 0, 1 
+  UNION ALL  
+  SELECT n + 1, fact * (n+1)  
+  FROM factorial 
+  WHERE n < 20
+) 
 SELECT * from factorial;
 
 --Output
@@ -454,6 +461,7 @@ SELECT * from factorial;
 
 ## Derived Tables
 * A subquery nested within a FROM clause, this result **must** be named.
+  * Usually writing a CTE is cleaner.
 
 ```sql
 SELECT 
@@ -477,6 +485,7 @@ t1.id = t2.id
 ```
 
 ## Window Functions
+
 * Act **after** the result of the query.
 * Window functions operate on a set of rows and return a single value for *each* row from the underlying query.
 * `PARTITION BY` col, and `ORDER BY` col are optional; i.e if no partiton, taken over whole table
