@@ -499,7 +499,8 @@ t1.id = t2.id
 
 ```sql
 FUNCTION() OVER([PARTITION BY col1,...] 
-                [ORDER BY col1, ...[NULLS{FIRST|LAST}]][FRAME CLAUSE]) AS calc_col
+                [ORDER BY col1, ...[NULLS{FIRST|LAST}]
+                [FRAME CLAUSE]) AS calc_col
 ```
 
 ```sql
