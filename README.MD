@@ -499,9 +499,11 @@ t1.id = t2.id
 
 ```sql
 FUNCTION() OVER([PARTITION BY col1,...] 
-                [ORDER BY col1, ...[NULLS{FIRST|LAST}]
+                [ORDER BY col1, ...[NULLS {FIRST|LAST}]
                 [FRAME CLAUSE]) AS calc_col
 ```
+
+Example:
 
 ```sql
 --- 3 Day Moving Average
@@ -530,12 +532,14 @@ Where *frame_start* is:
 And *frame_end* is:  
 * `CURRENT ROW` or `UNBOUNDED FOLLOWING`
 
-Example
+Example:
 ```sql
 SELECT
 AVG(price) OVER(ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as avg_3D_price
 ...
 ```
+
+### Lag and Lead
 
 * `LAG` and `LEAD` gets the previous or following value of a particular column.  
 
@@ -545,6 +549,7 @@ SELECT
 LAG(col, offset, [default_if_no_value]) OVER()
 ...
 ```
+### Ranking Functions
 
 * `DENSE_RANK()` does not skip any ranks if there is a tie between the ranks of the preceding records.
 * `RANK()` may skip ranks.
