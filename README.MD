@@ -138,10 +138,10 @@ FROM table_name
 WHERE column_name IN (value1, value2, ...);
 ```
 
-## ANY and ALL
+### ANY and ALL
 
 
-### NULL values
+## NULL values
 When checking for `NULL` values, you must use the `IS` keyword, not `=`.
 
 * Check using `IS NULL` or `IS NOT NULL`.
@@ -168,7 +168,9 @@ FROM table_name
 ORDER BY column1, column2, ... [ASC|DESC];
 ```
 
-## Creating Tables
+## Data Definiton Language (DDL) Commands
+
+### Creating Tables
 
 ```sql
 CREATE TABLE table_name (
@@ -188,14 +190,14 @@ CREATE TABLE employees
 );
 ```
 
-## Inserting Values
+### Inserting Values
 
 ```sql
 INSERT INTO table_name (column1, column2, column3, ...)
 VALUES (value1, value2, value3, ...);
 ```
 
-## Updating Values
+### Updating Values
 
 ```sql
 UPDATE table_name
