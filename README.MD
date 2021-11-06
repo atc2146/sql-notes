@@ -145,7 +145,7 @@ WHERE column_name IN (value1, value2, ...);
 When checking for `NULL` values, you must use the `IS` keyword, not `=`.
 
 * Check using `IS NULL` or `IS NOT NULL`.
-* `COALESCE()` takes the first non-null value.  Similar functions in other databases include `NVL`, 
+* `COALESCE()` takes the first non-null value.  Similar functions in other databases include `NVL`.
 * ANSI_NULLS operate [differently](https://stackoverflow.com/questions/9766717/in-sql-server-what-does-set-ansi-nulls-on-mean#:~:text=If%20ANSI_NULLS%20is%20set%20to,compared%20to%20NULL%20is%20TRUE%20.), it is three-valued logic.
 * Generally, aggregate functions like `AVG()` dissmisses rows with `NULL` values.
 
@@ -159,8 +159,8 @@ WHERE col1 IS NULL;
 
 Put the `ORDER BY` statement at the end of your SQL query.
 * Two options: `ASC`, `DESC`
-  * Sorted by ascending order by default
-* Can order by multiple columns
+  * Sorted by ascending order by default.
+* Can order by multiple columns.
 
 ```sql
 SELECT column1, column2, ...
@@ -214,12 +214,15 @@ SELECT MAX(Price) AS LargestPrice
 FROM Products;
 ```
 
+Note: The `LEAST()` and `GREATEST()` [function](https://www.w3schools.com/sql/func_mysql_least.asp) may be of interest.
+
 ### COUNT(), SUM(), and AVG() functions
 
 ```sql
-SELECT COUNT(column_name)
+SELECT col1, COUNT(col2) AS count_col2
 FROM table_name
-WHERE condition;
+WHERE condition
+GROUP BY col1
 ```
 
 A `COUNT(*)` will count all `NULL` and `NOT NULL` values.
@@ -227,11 +230,11 @@ A `COUNT(*)` will count all `NULL` and `NOT NULL` values.
 ## JOINS
 
 SQL joins include:
-* `INNER JOIN`: selects records that have matching values in both tables.
-* `LEFT (OUTER) JOIN`: returns all records from the left table (table1), and the matched records from the right table (table2). The result is NULL from the right side, if there is no match.
-* `RIGHT (OUTER) JOIN`: same logic as `LEFT JOIN`.
-* `FULL (OUTER) JOIN`: returns all records when there is a match in left (table1) or right (table2) table records.
-* `CROSS JOIN`: Does a cartesian product. Rarely used.  The total number of rows will be (number of rows in table1)*(number of rows in table2).
+* `INNER JOIN`: Selects records that have matching join values in both tables.
+* `LEFT (OUTER) JOIN`: Returns all records from the left table (table1), and the matched records from the right table (table2). The result is `NULL` from the right side, if there is no match.
+* `RIGHT (OUTER) JOIN`: Same logic as `LEFT JOIN`.
+* `FULL (OUTER) JOIN`: Returns all records when there is a match in left (table1) or right (table2) table records.
+* `CROSS JOIN`: Does a cartesian product. The total number of rows will be (number of rows in table1)*(number of rows in table2).
 
 
 
@@ -273,27 +276,29 @@ WHERE table2.key IS NULL;
 ```SQL
 SELECT *
 FROM Orders
-LEFT JOIN OrderLines ON OrderLines.OrderID=Orders.ID
-WHERE Orders.ID = 12345
+LEFT JOIN OrderLines 
+       ON OrderLines.OrderID = Orders.ID
+    WHERE Orders.ID = 12345
 
 
 SELECT *
 FROM Orders
-LEFT JOIN OrderLines ON OrderLines.OrderID=Orders.ID 
-    AND Orders.ID = 12345
+LEFT JOIN OrderLines
+       ON OrderLines.OrderID = Orders.ID 
+      AND Orders.ID = 12345
 ```
 The first will return an order and its lines, if any, for order number `12345`. The second will return all orders, but only order `12345` will have any lines associated with it.
 
 With an `INNER JOIN`, the clauses are effectively equivalent.
 
 Summary:
-* `WHERE`: filtered after joining
-* `AND` filtered before joining
+* `WHERE`: Filtered **after** joining.
+* `AND` Filtered **before** joining.
 
 ## Union
 
-* `UNION ALL`: does not remove any rows.
-* `UNION`: removes duplicates.
+* `UNION ALL`: Does not remove any rows.
+* `UNION`: Removes duplicate rows.
 * The number of columns from the queries must match.  The datatype of each column must also match.
 
 ```sql
@@ -308,7 +313,7 @@ SELECT column_name(s) FROM table2;
 ### Except
 `EXCEPT` combines two `SELECT` statements and returns rows from the first `SELECT` statement that are not returned by the second `SELECT` statement.
 
-In set theory, this is equivalent to A - B = A ∩ B<sup>c</sup>, Where A is the first table and B is the second table.
+In set theory, this is equivalent to A - B = A ∩ B<sup>c</sup>, where A is the first table and B is the second table.
 
 ## Grouping
 
