@@ -1,17 +1,17 @@
 # SQL Notes
 
-* SQL syntax is different, but ANSI SQL is standard
-* Not case sensitive
-* Semi-optional: Use a semi-colon at the end of each statement
+* SQL syntax is different, but ANSI SQL is standard.
+* **Not** case sensitive.
+* Semi-optional: Use a semi-colon at the end of each statement.
 
 ## Schemas
 
 ### Star Schema
-* Not normalized
-* Good for simple relationships
+* Not normalized.
+* Good for simple relationships.
 
 ### Snowflake Schema
-* Normalized, no redundant information
+* Normalized, no redundant information.
 * **Fact tables** contains business facts, and have foreign keys which refer to candidate keys in the dimension tables.
 * **Dimension tables** contain descriptive fields that are typically textual fields.
 
@@ -46,7 +46,8 @@ SELECT col1, col2
 FROM table_name;
 ```
 
-The statement below will only return distinct values from the "col1"   columns.
+The statement below will only return distinct values from the "col1" columns.  Alternatively, one could use a `GROUP BY` clause (recommend to use `DISTINCT`).
+
 ```sql
 SELECT DISTINCT col1 
 FROM table_name;
@@ -85,7 +86,7 @@ LIMIT 3;
 
 The `WHERE` clause:
 * Is used to filter records.
-* Operators that can be used in WHERE clause: `<>`, `BETWEEN`, `LIKE`.
+* Operators that can be used in `WHERE` clause: `<>`, `BETWEEN`, `LIKE`.
 * Can also do `WHERE NOT` <condition>.
 
 ```sql
@@ -106,15 +107,15 @@ WHERE col2 NOT IN (1, 3, 4);
 
 Operators include:
 * `AND`, `OR`, `NOT`
-* `LIKE`, `ALL`, `ANY`
+* `LIKE`, `ALL`, `ANY`, `ILIKE`
 * `>`, `>=`, `<`, `<=`, `=`
 
 Note: the equality operator is one *single* equal sign.
 
 
 ### LIKE operator
-* `%`: The percent sign represents zero, one, or multiple characters
-* `_`: The underscore represents a single character
+* `%`: The percent sign represents zero, one, or multiple characters.
+* `_`: The underscore represents a single character.
 
 ```sql
 -- First name must start with A
@@ -127,6 +128,8 @@ SELECT first_name
 FROM employees
 WHERE first_name LIKE 'A_%'
 ```
+
+The `ILIKE` operator is case insenstive.
 
 ### IN operator
 ```sql
@@ -142,8 +145,8 @@ WHERE column_name IN (value1, value2, ...);
 When checking for `NULL` values, you must use the `IS` keyword, not `=`.
 
 * Check using `IS NULL` or `IS NOT NULL`.
-* `COALESCE()` takes the first non-null value.
-* ANSI_NULLS operate differently, it is three-valued logic
+* `COALESCE()` takes the first non-null value.  Similar functions in other databases include `NVL`, 
+* ANSI_NULLS operate [differently](https://stackoverflow.com/questions/9766717/in-sql-server-what-does-set-ansi-nulls-on-mean#:~:text=If%20ANSI_NULLS%20is%20set%20to,compared%20to%20NULL%20is%20TRUE%20.), it is three-valued logic.
 * Generally, aggregate functions like `AVG()` dissmisses rows with `NULL` values.
 
 ```sql
