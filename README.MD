@@ -528,7 +528,8 @@ The FRAME CLAUSE can be either:
 * {RANGE|ROWS} BETWEEN *frame_start* and *frame_end*
 
 Where *frame_start* is:
-* `UNBOUNDED PRECEDING` or `CURRENT ROW`.  
+* `UNBOUNDED PRECEDING` or `CURRENT ROW`  
+
 And *frame_end* is:  
 * `CURRENT ROW` or `UNBOUNDED FOLLOWING`
 
@@ -549,10 +550,54 @@ SELECT
 LAG(col, offset, [default_if_no_value]) OVER()
 ...
 ```
+
+Example:
+```sql
+SELECT
+LAG(sale_value, 1) OVER(ORDER BY date_updated) AS previous_sale_price
+FROM sales
+...
+
 ### Ranking Functions
 
 * `DENSE_RANK()` does not skip any ranks if there is a tie between the ranks of the preceding records.
 * `RANK()` may skip ranks.
+
+Here is a good [explanation](https://stackoverflow.com/questions/11183572/whats-the-difference-between-rank-and-dense-rank-functions-in-oracle) of the differences.
+
+
+```text
+CREATE TABLE t AS
+SELECT 'a' v FROM dual UNION ALL
+SELECT 'a'   FROM dual UNION ALL
+SELECT 'a'   FROM dual UNION ALL
+SELECT 'b'   FROM dual UNION ALL
+SELECT 'c'   FROM dual UNION ALL
+SELECT 'c'   FROM dual UNION ALL
+SELECT 'd'   FROM dual UNION ALL
+SELECT 'e'   FROM dual;
+
+SELECT
+  v,
+  ROW_NUMBER() OVER (ORDER BY v) row_number,
+  RANK()       OVER (ORDER BY v) rank,
+  DENSE_RANK() OVER (ORDER BY v) dense_rank
+FROM t
+ORDER BY v;
+
++---+------------+------+------------+
+| V | ROW_NUMBER | RANK | DENSE_RANK |
++---+------------+------+------------+
+| a |          1 |    1 |          1 |
+| a |          2 |    1 |          1 |
+| a |          3 |    1 |          1 |
+| b |          4 |    4 |          2 |
+| c |          5 |    5 |          3 |
+| c |          6 |    5 |          3 |
+| d |          7 |    7 |          4 |
+| e |          8 |    8 |          5 |
++---+------------+------+------------+
+```
 
 ## Built-In Functions
 * concat is `||`
