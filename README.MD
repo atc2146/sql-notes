@@ -560,9 +560,9 @@ FROM sales
 
 ### Ranking Functions
 
-* `ROW_NUMBER()` attributes a unique value to each row
-* `RANK()` attributes the same row number to the same value, leaving "holes"
-* `DENSE_RANK()` attributes the same row number to the same value, leaving no "holes"
+* `ROW_NUMBER()` attributes a unique value to each row.
+* `RANK()` attributes the same row number to the same value, leaving "holes".
+* `DENSE_RANK()` attributes the same row number to the same value, leaving no "holes".
 
 Here is a good [explanation](https://stackoverflow.com/questions/11183572/whats-the-difference-between-rank-and-dense-rank-functions-in-oracle) of the differences.
 
@@ -613,7 +613,7 @@ SELECT DATEDIFF("2017-06-25", "2017-06-15");
 ```
 
 ## Other
-* Division:  SQL automically does integer division if both the numerator and denominator are integers.  Explicit cast to floats is needed.
+* Division:  SQL automically does integer division if both the numerator and denominator are integers.  Explicit cast to floats is needed.  You can also force the numerator or denominator into a float by multiplying by `1.0`
 
 
 ## References
