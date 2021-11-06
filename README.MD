@@ -498,14 +498,21 @@ t1.id = t2.id
 * Note: The `ROW_NUMBER()` function does not reset if it sees a different partition value that switches back (i.e XXYX)
 
 ```sql
-FUNCTION() OVER([PARTITION BY col1,...] [ORDER BY col1, ...[NULLS{FIRST|LAST}]][FRAME CLAUSE]) AS calc_col
-
---- 3 Day Moving Average
-select
-  *
-  ,AVG(Price) OVER(ORDER BY Date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_average
-from stock_prices;
+FUNCTION() OVER([PARTITION BY col1,...] 
+                [ORDER BY col1, ...[NULLS{FIRST|LAST}]][FRAME CLAUSE]) AS calc_col
 ```
+
+```sql
+--- 3 Day Moving Average
+SELECT
+  Ticker
+  ,Date
+  ,Price
+  ,AVG(Price) OVER(ORDER BY Date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_average
+FROM stock_prices;
+```
+
+### Frame Clauses
 
 The FRAME CLAUSE is by default:
 ```sql
