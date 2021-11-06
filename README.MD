@@ -556,12 +556,13 @@ Example:
 SELECT
 LAG(sale_value, 1) OVER(ORDER BY date_updated) AS previous_sale_price
 FROM sales
-...
+```
 
 ### Ranking Functions
 
-* `DENSE_RANK()` does not skip any ranks if there is a tie between the ranks of the preceding records.
-* `RANK()` may skip ranks.
+* `ROW_NUMBER()` attributes a unique value to each row
+* `RANK()` attributes the same row number to the same value, leaving "holes"
+* `DENSE_RANK()` attributes the same row number to the same value, leaving no "holes"
 
 Here is a good [explanation](https://stackoverflow.com/questions/11183572/whats-the-difference-between-rank-and-dense-rank-functions-in-oracle) of the differences.
 
@@ -600,6 +601,7 @@ ORDER BY v;
 ```
 
 ## Built-In Functions
+
 * concat is `||`
 
 ### Date Functions
