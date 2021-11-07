@@ -1,5 +1,18 @@
 # SQL Notes
 
+Notes and references on SQL. Taken from various places on the internet.
+
+## Table of Contents
+
+* [Schemas](#schemas)
+    * [Star Schema](#star-schema)
+    * [Snowflake Schema](#snowflake-schema)
+* [Overview](#overview)
+* [Terminology](#terminology)
+
+
+## Overview
+
 * SQL syntax is different, but ANSI SQL is standard.
 * **Not** case sensitive.
 * Semi-optional: Use a semi-colon at the end of each statement.
