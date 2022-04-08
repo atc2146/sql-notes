@@ -373,11 +373,13 @@ In set theory, this is equivalent to A - B = A ∩ B<sup>c</sup>, where A is the
 ### Group Concat
 `GROUP_CONCAT` / `LISTAGG` function is an aggregate function that concatenates strings from a group into a single string with various options.
 
-```GROUP_CONCAT(
+```sql
+GROUP_CONCAT(
     DISTINCT expression
     ORDER BY expression
     SEPARATOR sep
-)```
+)
+```
 
 ## Grouping
 
