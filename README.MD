@@ -33,6 +33,7 @@ Notes and references on SQL. Taken from various places on the internet.
   * [Union](#union)
   * [Intersect](#intersect)
   * [Except](#except)
+  * [Group Concat](#group-concat)
 * [Grouping](#grouping)
   * [Having](#having)
 * [Case Statements](#case-statements)
@@ -369,6 +370,15 @@ SELECT column_name(s) FROM table2;
 
 In set theory, this is equivalent to A - B = A ∩ B<sup>c</sup>, where A is the first table and B is the second table.
 
+### Group Concat
+`GROUP_CONCAT` / `LISTAGG` function is an aggregate function that concatenates strings from a group into a single string with various options.
+
+```GROUP_CONCAT(
+    DISTINCT expression
+    ORDER BY expression
+    SEPARATOR sep
+)```
+
 ## Grouping
 
 The `GROUP BY` keyword is used to group values in a column and is usually used with aggregate functions such as `SUM()`, `MAX()`, `COUNT()`.
@@ -679,3 +689,4 @@ SELECT DATEDIFF("2017-06-25", "2017-06-15");
 * [Github rbhatia46 DS Interview Resources](https://github.com/rbhatia46/Data-Science-Interview-Resources)
 * [Medium: Churn rate with SQL](https://medium.com/@gozdeturan/churn-rate-with-sql-eef787ca4b2b)
 * [Medium: SQL Questions (the histogram) for the aspiring Data Scientist](https://medium.com/analytics-and-data/sql-interview-questions-for-aspiring-data-scientist-the-histogram-76a46de9b0a3)
+*[MySQL GGROUP_CONCAT](https://www.mysqltutorial.org/mysql-group_concat/)
