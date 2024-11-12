@@ -674,7 +674,8 @@ SELECT DATEDIFF("2017-06-25", "2017-06-15");
 ```
 
 ## Other
-* Division:  SQL automically does integer division if both the numerator and denominator are integers.  Explicit cast to floats is needed.  You can also force the numerator or denominator into a float by multiplying by `1.0`
+* Division:  SQL automically does integer division if both the numerator and denominator are integers.  Explicit cast to floats is needed.  You can also force the numerator or denominator into a float by multiplying by `1.0` .
+* Gotchas: For boolean expressions in where be very careful when using a combination of `OR` and `AND` statements. For example, `(expr1 OR expr2) AND expr3` is different than `expr1 OR expr2 AND expr3` . 
 
 
 ## References
