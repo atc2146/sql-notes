@@ -189,7 +189,26 @@ WHERE column_name IN (value1, value2, ...);
 ```
 
 ### ANY and ALL
-
+* The `ANY` and `ALL` operators allow you to perform a comparison between a single column value and a range of other values.
+* The `ANY` operator:
+  * returns a boolean value as a result
+  * returns TRUE if ANY of the subquery values meet the condition
+  * ANY means that the condition will be true if the operation is true for any of the values in the range.
+* The `ALL` operator:
+  * returns a boolean value as a result
+  * returns TRUE if ALL of the subquery values meet the condition 
+  * is used with `SELECT`, `WHERE` and `HAVING` statements
+  * `ALL` means that the condition will be true only if the operation is true for all values in the range. 
+  
+  
+```sql
+SELECT column_name(s)
+FROM table_name
+WHERE column_name operator ANY
+  (SELECT column_name
+  FROM table_name
+  WHERE condition);
+```  
 
 ## NULL values
 When checking for `NULL` values, you must use the `IS` keyword, not `=`.
