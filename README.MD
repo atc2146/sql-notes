@@ -650,7 +650,7 @@ Here is a good [explanation](https://stackoverflow.com/questions/11183572/whats-
 
 ```text
 CREATE TABLE t AS
-SELECT 'a' v FROM dual UNION ALL
+SELECT 'a'   FROM dual UNION ALL
 SELECT 'a'   FROM dual UNION ALL
 SELECT 'a'   FROM dual UNION ALL
 SELECT 'b'   FROM dual UNION ALL
@@ -663,22 +663,23 @@ SELECT
   v,
   ROW_NUMBER() OVER (ORDER BY v) row_number,
   RANK()       OVER (ORDER BY v) rank,
-  DENSE_RANK() OVER (ORDER BY v) dense_rank
+  DENSE_RANK() OVER (ORDER BY v) dense_rank,
+  ROW_NUMBER() OVER (PARTITION BY V ORDER BY v) row_number_dedupe
 FROM t
 ORDER BY v;
 
-+---+------------+------+------------+
-| V | ROW_NUMBER | RANK | DENSE_RANK |
-+---+------------+------+------------+
-| a |          1 |    1 |          1 |
-| a |          2 |    1 |          1 |
-| a |          3 |    1 |          1 |
-| b |          4 |    4 |          2 |
-| c |          5 |    5 |          3 |
-| c |          6 |    5 |          3 |
-| d |          7 |    7 |          4 |
-| e |          8 |    8 |          5 |
-+---+------------+------+------------+
++---+------------+------+------------+------------------+
+| V | ROW_NUMBER | RANK | DENSE_RANK | ROW_NUMBER_DEDUPE|
++---+------------+------+------------+------------------+
+| a |          1 |    1 |          1 |                1 |
+| a |          2 |    1 |          1 |                2 |
+| a |          3 |    1 |          1 |                3 |
+| b |          4 |    4 |          2 |                1 |
+| c |          5 |    5 |          3 |                1 |
+| c |          6 |    5 |          3 |                2 |
+| d |          7 |    7 |          4 |                1 |
+| e |          8 |    8 |          5 |                1 |
++---+------------+------+------------+------------------+
 ```
 
 ## Built-In Functions
