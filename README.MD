@@ -569,10 +569,10 @@ t1.id = t2.id
 
 ## Window Functions
 
-* Act **after** the result of the query.
+* Window functions are evaluated after the `WHERE`, `GROUP BY`, and `HAVING` clauses, but before the final `ORDER BY` of the query.
 * Window functions operate on a set of rows and return a single value for *each* row from the underlying query.
 * `PARTITION BY` col, and `ORDER BY` col are optional; i.e if no partiton, taken over whole table
-  * `ORDER BY` is not optional for `ROW_NUMBER()`
+  * `ORDER BY` is not optional for `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, `NTILE()`
 * The `ORDER BY` clause defines the logical order of the rows within each partition of the result set.
 * Function can be `AVG()`, `SUM()`, `ROW_NUMBER()`, etc.
 * For ranking functions, make sure to get the correct ordering.
@@ -587,12 +587,15 @@ FUNCTION() OVER([PARTITION BY col1,...]
 Example:
 
 ```sql
---- 3 Day Moving Average
+-- 3-Day Moving Average (includes current row and 2 previous days)
 SELECT
-  Ticker
-  ,Date
-  ,Price
-  ,AVG(Price) OVER(ORDER BY Date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_average
+  Ticker,
+  Date,
+  Price,
+  AVG(Price) OVER (
+    ORDER BY Date
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+  ) AS moving_average
 FROM stock_prices;
 ```
 
@@ -603,6 +606,9 @@ The FRAME CLAUSE is by default:
 [ROWS|RANGE] BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 ```
 `RANGE` will include those rows in the window frame which have the same `ORDER BY` values as the current row.
+
+`ROWS` is a sliding window by row count (doesn’t care about duplicates in `ORDER BY`).
+
 
 The FRAME CLAUSE can be either:
 * {RANGE|ROWS} *frame_start*
@@ -616,10 +622,15 @@ And *frame_end* is:
 
 Example:
 ```sql
+-- Average across a sliding 3-row window (previous, current, next)
 SELECT
-AVG(price) OVER(ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) as avg_3D_price
+  AVG(price) OVER (
+    ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING
+  ) AS avg_3_row_price
+FROM stock_prices;
 ...
 ```
+For ranking functions (`ROW_NUMBER()`, `RANK()`, etc.), the frame clause is ignored—they always operate on the entire partition.
 
 ### Lag and Lead
 
@@ -650,21 +661,21 @@ Here is a good [explanation](https://stackoverflow.com/questions/11183572/whats-
 
 ```text
 CREATE TABLE t AS
-SELECT 'a'   FROM dual UNION ALL
-SELECT 'a'   FROM dual UNION ALL
-SELECT 'a'   FROM dual UNION ALL
-SELECT 'b'   FROM dual UNION ALL
-SELECT 'c'   FROM dual UNION ALL
-SELECT 'c'   FROM dual UNION ALL
-SELECT 'd'   FROM dual UNION ALL
-SELECT 'e'   FROM dual;
+SELECT 'a' AS v FROM dual UNION ALL
+SELECT 'a' AS v FROM dual UNION ALL
+SELECT 'a' AS v FROM dual UNION ALL
+SELECT 'b' AS v FROM dual UNION ALL
+SELECT 'c' AS v FROM dual UNION ALL
+SELECT 'c' AS v FROM dual UNION ALL
+SELECT 'd' AS v FROM dual UNION ALL
+SELECT 'e' AS v FROM dual;
 
 SELECT
   v,
   ROW_NUMBER() OVER (ORDER BY v) row_number,
   RANK()       OVER (ORDER BY v) rank,
   DENSE_RANK() OVER (ORDER BY v) dense_rank,
-  ROW_NUMBER() OVER (PARTITION BY V ORDER BY v) row_number_dedupe
+  ROW_NUMBER() OVER (PARTITION BY v ORDER BY v) row_number_dedupe
 FROM t
 ORDER BY v;
 
