@@ -403,14 +403,7 @@ GROUP_CONCAT(
 )
 ```
 
-```
-Order_ID,Item
-101,Apples
-101,Bread
-101,Milk
-102,Coffee
-102,Sugar
-
+```sql
 SELECT 
     Order_ID,
     LISTAGG(Item, '; ') WITHIN GROUP (ORDER BY Item ASC) AS Shopping_List
@@ -418,12 +411,20 @@ FROM Store_Orders
 GROUP BY Order_ID;
 ```
 
+```csv
+Order_ID,Item
+101,Apples
+101,Bread
+101,Milk
+102,Coffee
+102,Sugar
 ```
+
 | Order_ID | Shopping_List |
 | :--- | :--- |
 | 101 | Apples; Bread; Milk |
 | 102 | Coffee; Sugar |
-```
+
 
 ## Grouping
 
