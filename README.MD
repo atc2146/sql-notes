@@ -33,7 +33,7 @@ Notes and references on SQL. Taken from various places on the internet. For educ
   * [Union](#union)
   * [Intersect](#intersect)
   * [Except](#except)
-  * [Group Concat](#group-concat)
+  * [LISTAGG](#LISTAGG)
 * [Grouping](#grouping)
   * [Having](#having)
 * [Case Statements](#case-statements)
@@ -392,10 +392,15 @@ SELECT column_name(s) FROM table2;
 
 In set theory, this is equivalent to A - B = A ∩ B<sup>c</sup>, where A is the first table and B is the second table.
 
-### Group Concat
-`GROUP_CONCAT` / `LISTAGG` function is an aggregate function that concatenates strings from a group into a single string with various options.
+### LISTAGG
+`LISTAGG()` / `GROUP_CONCAT()` function is an aggregate function that concatenates strings from a group into a single string with various options.
+
+Note: `LISTAGG()` is ANSI SQL.
 
 ```sql
+LISTAGG([DISTINCT] measure_column [, 'delimiter']) 
+    WITHIN GROUP (ORDER BY sort_column [ASC | DESC])
+
 GROUP_CONCAT(
     DISTINCT expression
     ORDER BY expression
