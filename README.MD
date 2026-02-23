@@ -1,6 +1,6 @@
 # SQL Notes
 
-Notes and references on SQL. Taken from various places on the internet.
+Notes and references on SQL. Taken from various places on the internet. For educational use only.
 
 ## Table of Contents
 
@@ -52,7 +52,7 @@ Notes and references on SQL. Taken from various places on the internet.
 
 * SQL syntax is different, but ANSI SQL is standard.
 * **Not** case sensitive.
-* Semi-optional: Use a semi-colon at the end of each statement.
+* Mostly optional: Use a semi-colon at the end of each statement.
 
 ## Schemas
 
@@ -96,7 +96,7 @@ SELECT col1, col2
 FROM table_name;
 ```
 
-The statement below will only return distinct values from the "col1" columns.  Alternatively, one could use a `GROUP BY` clause (recommend to use `DISTINCT`).
+The statement below will only return distinct values from the "col1" columns.  Alternatively, one could use a `GROUP BY` clause (recommend to use `DISTINCT` however).
 
 ```sql
 SELECT DISTINCT col1 
@@ -136,7 +136,7 @@ LIMIT 3;
 
 The `WHERE` clause:
 * Is used to filter records.
-* Operators that can be used in `WHERE` clause: `<>`, `BETWEEN`, `LIKE`.
+* Operators that can be used in `WHERE` clause: `<>` (`!=`), `BETWEEN`, `LIKE`.
 * Can also do `WHERE NOT` <condition>.
 
 ```sql
@@ -157,7 +157,7 @@ WHERE col2 NOT IN (1, 3, 4);
 
 Operators include:
 * `AND`, `OR`, `NOT`
-* `LIKE`, `ALL`, `ANY`, `ILIKE`
+* `LIKE`, `ILIKE`, `ALL`, `ANY`
 * `>`, `>=`, `<`, `<=`, `=`
 
 Note: the equality operator is one *single* equal sign.
@@ -179,7 +179,7 @@ FROM employees
 WHERE first_name LIKE 'A_%'
 ```
 
-The `ILIKE` operator is case insenstive.
+The `ILIKE` operator is case insenstive. Another alternative is to `lower(column_name)`
 
 ### IN operator
 ```sql
@@ -281,8 +281,8 @@ WHERE condition;
 * Should use aliases for clarity.
 
 ```sql
-SELECT MAX(Price) AS LargestPrice
-FROM Products;
+SELECT MAX(price) AS largest_price
+FROM products;
 ```
 
 Note: The `LEAST()` and `GREATEST()` [function](https://www.w3schools.com/sql/func_mysql_least.asp) may be of interest.
@@ -311,22 +311,24 @@ SQL joins include:
 
 ```sql
 -- INNER JOIN
-SELECT DISTINCT c.name
+SELECT 
+  DISTINCT c.name
 FROM customers c
 INNER JOIN orders o
 ON c.id = o.cust_id;
 
 -- LEFT JOIN
 SELECT 
-  c.name
-  ,o.order_id
-  ,o.order_date
+  c.name,
+  o.order_id,
+  o.order_date
 FROM customers c
 LEFT JOIN orders o
 ON c.id = o.cust_id;
 
 -- CROSS JOIN
-SELECT * 
+SELECT 
+  * 
 FROM table1 
 CROSS JOIN table2;
 ```
@@ -336,7 +338,8 @@ Left Exclusive Join: If you don’t want any of the right table’s values and y
 
 ```sql
 -- LEFT EXCLUSIVE JOIN
-SELECT column_name(s)
+SELECT 
+  column_name(s)
 FROM table1
 LEFT JOIN table2
 ON table1.key = table2.key
