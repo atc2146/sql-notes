@@ -460,7 +460,9 @@ ORDER BY column_name(s);
 Example:
 
 ```sql
-SELECT titles.pub_id, AVG(titles.price) AS avg_price
+SELECT 
+    titles.pub_id, 
+    AVG(titles.price) AS avg_price
 FROM titles 
 INNER JOIN publishers  
   ON titles.pub_id = publishers.pub_id  
@@ -511,20 +513,27 @@ SQL_statement using above CTE;
 You can write multiple CTEs in one query
 ```sql
 WITH send_timespent AS (
-    SELECT age_breakdown.age_bucket, SUM(activities.time_spent) AS send_timespent 
+    SELECT 
+        age_breakdown.age_bucket, 
+        SUM(activities.time_spent) AS send_timespent 
     FROM age_breakdown
-  LEFT JOIN activities on age_breakdown.user_id = activities.user_id
+    LEFT JOIN activities 
+        ON age_breakdown.user_id = activities.user_id
     WHERE activities.type = 'send'
     GROUP BY 1
 ),
 open_timespent AS (
-    SELECT age_breakdown.age_bucket, SUM(activities.time_spent) AS open_timespent 
+    SELECT 
+        age_breakdown.age_bucket, 
+        SUM(activities.time_spent) AS open_timespent 
     FROM age_breakdown
-  LEFT JOIN activities on age_breakdown.user_id = activities.user_id
+    LEFT JOIN activities 
+        ON age_breakdown.user_id = activities.user_id
     WHERE activities.type = 'open'
     GROUP BY 1
 ),
-SELECT a.age_bucket, 
+SELECT 
+    a.age_bucket, 
     s.send_timespent / (s.send_timespent + o.open_timespent) AS pct_send,
     o.open_timespent / (s.send_timespent + o.open_timespent) AS pct_open,
 FROM age_breakdown a 
@@ -544,7 +553,7 @@ WITH RECURSIVE factorial(n, fact) AS (
 ) 
 SELECT * from factorial;
 
---Output
+-- Output
 +------+---------------------+
 | n    | fact                |
 +------+---------------------+
@@ -579,8 +588,8 @@ SELECT * from factorial;
 
 ```sql
 SELECT 
-  named_table.col1
-  ,named_table.col2
+  named_table.col1,
+  named_table.col2
 FROM 
   (
   SELECT col1, col2
@@ -602,7 +611,7 @@ t1.id = t2.id
 
 * Window functions are evaluated after the `WHERE`, `GROUP BY`, and `HAVING` clauses, but before the final `ORDER BY` of the query.
 * Window functions operate on a set of rows and return a single value for *each* row from the underlying query.
-* `PARTITION BY` col, and `ORDER BY` col are optional; i.e if no partiton, taken over whole table
+* `PARTITION BY` column, and `ORDER BY` column are optional; i.e if no partiton, taken over whole table
   * `ORDER BY` is not optional for `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, `NTILE()`
 * The `ORDER BY` clause defines the logical order of the rows within each partition of the result set.
 * Function can be `AVG()`, `SUM()`, `ROW_NUMBER()`, etc.
@@ -738,7 +747,7 @@ SELECT DATEDIFF("2017-06-25", "2017-06-15");
 
 ## Other
 * Division:  SQL automically does integer division if both the numerator and denominator are integers.  Explicit cast to floats is needed.  You can also force the numerator or denominator into a float by multiplying by `1.0` .
-* Gotchas: For boolean expressions in where be very careful when using a combination of `OR` and `AND` statements. For example, `(expr1 OR expr2) AND expr3` is different than `expr1 OR expr2 AND expr3` .  
+* Gotchas: For boolean expressions, be very careful when using a combination of `OR` and `AND` statements. For example, `(expr1 OR expr2) AND expr3` is different than `expr1 OR expr2 AND expr3` .  
 
 
 ## References
