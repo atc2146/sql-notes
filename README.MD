@@ -179,7 +179,7 @@ FROM employees
 WHERE first_name LIKE 'A_%'
 ```
 
-The `ILIKE` operator is case insenstive. Another alternative is to `lower(column_name)`
+The `ILIKE` operator is case insenstive. Another alternative is using `lower(column_name)`
 
 ### IN operator
 ```sql
